@@ -1,0 +1,51 @@
+{
+  "name": "kube-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --mode prod",
+    "build-dev": "vue-cli-service build --mode dev",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint",
+    "analyz": "vue-cli-service build --mode analyz"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.0.3",
+    "@babel/runtime": "^7.9.2",
+    "amfe-flexible": "^2.2.1",
+    "ant-design-vue": "^1.4.12",
+    "axios": "^0.19.2",
+    "babel-plugin-import": "^1.13.0",
+    "babel-polyfill": "^6.26.0",
+    "core-js": "^3.6.4",
+    "highlight.js": "^9.18.1",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "vue": "^2.6.11",
+    "vue-markdown": "^2.2.4",
+    "vue-router": "^3.1.5",
+    "vuex": "^3.1.2"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@vue/cli-plugin-babel": "~4.2.0",
+    "@vue/cli-plugin-eslint": "~4.2.0",
+    "@vue/cli-plugin-router": "~4.2.0",
+    "@vue/cli-plugin-unit-mocha": "~4.2.0",
+    "@vue/cli-plugin-vuex": "~4.2.0",
+    "@vue/cli-service": "~4.2.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/test-utils": "1.0.0-beta.31",
+    "babel-eslint": "^10.0.3",
+    "chai": "^4.1.2",
+    "compression-webpack-plugin": "^3.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-vue": "^6.1.2",
+    "prettier": "^1.19.1",
+    "sass": "^1.25.0",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
+  }
+}

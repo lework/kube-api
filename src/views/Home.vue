@@ -1,0 +1,379 @@
+/* eslint-disable prettier/prettier */ /* eslint-disable no-prototype-builtins
+*/
+<template>
+  <div>
+    <div class="search">
+      <a-input-search
+        placeholder="输入 Kind or Group"
+        v-model.trim="search_text"
+        @search="onSearch"
+        enterButton="搜索..."
+      />
+    </div>
+    <div class="content">
+      <a-spin :spinning="spinning">
+        <div v-if="searchData.length == 0">
+          <div class="tools">
+            <a-dropdown>
+              <a-menu slot="overlay" @click="handleMenuClick">
+                <a-menu-item :key="item" v-for="item in version_list">
+                  <a-icon type="search" />{{ item }}
+                </a-menu-item>
+              </a-menu>
+              <a-button style="margin-left: 8px">
+                当前版本: <span v-text="version" style="margin-left:5px"></span>
+                <a-icon type="down" />
+              </a-button>
+            </a-dropdown>
+          </div>
+          <a-table :columns="columns" :data-source="data">
+            <span slot="versions" slot-scope="versions, url">
+              <a-tag v-for="v in versions" :key="v" color="green">
+                <a
+                  target="_blank"
+                  :href="
+                    url['url'] +
+                      '/#' +
+                      url['kind'].toLowerCase() +
+                      '-' +
+                      v +
+                      '-' +
+                      url['group'].replace(/\./g, '-').toLowerCase()
+                  "
+                  >{{ v }}</a
+                >
+              </a-tag>
+            </span>
+          </a-table>
+        </div>
+        <div v-else>
+          <a-table :columns="searchColumns" :data-source="searchData">
+            <span slot="k8s" slot-scope="k8s, url">
+              <a target="_blank" :href="url['url']">{{ k8s }}</a>
+            </span>
+            <span slot="versions" slot-scope="versions, url">
+              <a-tag v-for="v in versions" :key="v" color="green">
+                <a
+                  target="_blank"
+                  :href="
+                    url['url'] +
+                      '/#' +
+                      url['kind'].toLowerCase() +
+                      '-' +
+                      v +
+                      '-' +
+                      url['group'].replace(/\./g, '-').toLowerCase()
+                  "
+                  >{{ v }}</a
+                >
+              </a-tag>
+            </span>
+          </a-table>
+        </div>
+      </a-spin>
+    </div>
+  </div>
+</template>
+
+<script>
+import {
+  Input,
+  Spin,
+  Table,
+  Dropdown,
+  Menu,
+  Icon,
+  Tag,
+  Button
+} from "ant-design-vue";
+
+export default {
+  name: "home",
+  data() {
+    return {
+      spinning: true,
+      kindFilter: [],
+      groupFilter: [],
+      versionFilter: [],
+      data: [],
+      api_data: {},
+      version: "",
+      version_list: [],
+      search_text: "",
+      searchData: [],
+      api_html: "https://kubernetes.io/docs/reference/generated/kubernetes-api/"
+    };
+  },
+  components: {
+    AInputSearch: Input.Search,
+    ASpin: Spin,
+    ATable: Table,
+    ADropdown: Dropdown,
+    AMenu: Menu,
+    AMenuItem: Menu.Item,
+    AIcon: Icon,
+    ATag: Tag,
+    AButton: Button
+  },
+  methods: {
+    onSearch(value) {
+      if (typeof value === "undefined" || value === null || value === "") {
+        this._getData();
+      } else {
+        this.getSearchData(value);
+      }
+    },
+    handleMenuClick(e) {
+      this.spinning = true;
+      this.version = e.key;
+      this.getVersionData();
+      this.spinning = false;
+    },
+    getVersionData() {
+      this.data = [];
+      this.kindFilter = [];
+      this.groupFilter = [];
+      let n = 1;
+      let kind_list = [];
+      let group_list = [];
+      for (var key in this.api_data[this.version]) {
+        if (kind_list.indexOf(key) === -1) {
+          kind_list.push(key);
+          this.kindFilter.push({
+            text: key,
+            value: key
+          });
+        }
+        for (var gkey in this.api_data[this.version][key]) {
+          this.data.push({
+            key: n,
+            url:
+              this.api_html +
+              this.version
+                .split(".")
+                .slice(0, 2)
+                .join("."),
+            kind: key,
+            group: gkey,
+            version: this.api_data[this.version][key][gkey]
+          });
+          n += 1;
+          if (group_list.indexOf(gkey) === -1) {
+            group_list.push(gkey);
+            this.groupFilter.push({
+              text: gkey,
+              value: gkey
+            });
+          }
+        }
+      }
+    },
+    getSearchData(search = "") {
+      this.searchData = [];
+      let n = 1;
+      for (var k8s_key in this.api_data) {
+        for (var kind_key in this.api_data[k8s_key]) {
+          let is_kind = false;
+          if (kind_key.toLowerCase().indexOf(search.toLowerCase()) !== -1) {
+            is_kind = true;
+          }
+          for (var group_key in this.api_data[k8s_key][kind_key]) {
+            if (
+              is_kind ||
+              group_key.toLowerCase().indexOf(search.toLowerCase()) !== -1
+            ) {
+              this.searchData.push({
+                key: n,
+                k8s: k8s_key,
+                url:
+                  this.api_html +
+                  k8s_key
+                    .split(".")
+                    .slice(0, 2)
+                    .join("."),
+                kind: kind_key,
+                group: group_key,
+                version: this.api_data[this.version][kind_key][group_key]
+              });
+              n += 1;
+            }
+          }
+        }
+      }
+    },
+    _getData() {
+      this.spinning = true;
+      this.$axios
+        .get("static/data/data.json")
+        .then(rep => {
+          this.api_data = rep.data;
+          for (var key in this.api_data) {
+            this.version_list.push(key);
+          }
+          for (var v_key in this.version_list) {
+            this.versionFilter.push({
+              text: this.version_list[v_key],
+              value: this.version_list[v_key]
+            });
+          }
+
+          this.version_list.sort(function(a, b) {
+            return a.replace("v", "") > b.replace("v", "") ? -1 : 1;
+          });
+          this.version = this.version_list[0];
+          this.getVersionData();
+          this.spinning = false;
+        })
+        .catch(e => {
+          this.$message.error("获取数据失败!");
+          console.log(e);
+        });
+    }
+  },
+  mounted() {
+    this._getData();
+  },
+  computed: {
+    columns() {
+      const columns = [
+        {
+          title: "Kind",
+          dataIndex: "kind",
+          filters: this.kindFilter,
+          onFilter: (value, record) => record.kind === value,
+          sorter: (a, b) => a.kind.localeCompare(b.kind)
+        },
+        {
+          title: "Group",
+          dataIndex: "group",
+          filters: this.groupFilter,
+          onFilter: (value, record) => record.group === value,
+          sorter: (a, b) => a.group.localeCompare(b.group)
+        },
+        {
+          title: "Version",
+          dataIndex: "version",
+          scopedSlots: { customRender: "versions" }
+        }
+      ];
+      return columns;
+    },
+    searchColumns() {
+      const searchColumns = [
+        {
+          title: "K8s Version",
+          dataIndex: "k8s",
+          filters: this.versionFilter,
+          onFilter: (value, record) => record.k8s === value,
+          sorter: (a, b) =>
+            a.k8s.replace("v", "") > b.k8s.replace("v", "") ? -1 : 1,
+          scopedSlots: { customRender: "k8s" }
+        },
+        {
+          title: "Kind",
+          dataIndex: "kind",
+          filters: this.kindFilter,
+          onFilter: (value, record) => record.kind === value,
+          sorter: (a, b) => a.kind.localeCompare(b.kind)
+        },
+        {
+          title: "Group",
+          dataIndex: "group",
+          filters: this.groupFilter,
+          onFilter: (value, record) => record.group === value,
+          sorter: (a, b) => a.group.localeCompare(b.group)
+        },
+        {
+          title: "Version",
+          dataIndex: "version",
+          scopedSlots: { customRender: "versions" }
+        }
+      ];
+      return searchColumns;
+    }
+  }
+};
+</script>
+
+<style lang="less" scoped>
+@min-width: 1000px;
+
+.list-title {
+  font-size: 16px;
+  font-weight: bolder;
+  font-family: "微软雅黑";
+}
+
+.search {
+  @media screen {
+    @media (min-width: @min-width) {
+      width: 600px;
+    }
+    @media (max-width: @min-width) {
+      font-size: 12px;
+      padding: 50px 10px 20px;
+    }
+  }
+  margin: 0 auto;
+  text-align: center;
+  padding: 50px 10px;
+}
+.content {
+  width: 100%;
+  padding: 0px 80px 20px 80px;
+  @media screen {
+    @media (max-width: @min-width) {
+      padding: 0 20px 20px 20px;
+    }
+  }
+}
+.ant-list-item-meta-description {
+  @media screen {
+    @media (max-width: @min-width) {
+      font-size: 12px;
+    }
+  }
+  .tag-title {
+    @media screen {
+      @media (max-width: @min-width) {
+        display: none;
+      }
+    }
+  }
+  .ant-tag {
+    @media screen {
+      @media (max-width: @min-width) {
+        margin: 0;
+      }
+    }
+  }
+}
+.tips {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.tips-tag {
+  @media screen {
+    @media (max-width: @min-width) {
+      font-size: 12px;
+    }
+  }
+  margin-bottom: 5px;
+}
+
+.header-switch {
+  float: right;
+}
+
+.list-header {
+  @media screen {
+    @media (max-width: @min-width) {
+      font-size: 12px;
+    }
+  }
+}
+
+.tools {
+  margin-bottom: 20px;
+}
+</style>
