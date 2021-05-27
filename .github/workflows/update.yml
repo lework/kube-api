@@ -27,7 +27,7 @@ jobs:
       run: |
         tags="$(git ls-remote --tags https://github.com/kubernetes/kubernetes.git | grep 'v[1-9]\.[0-9]*\.[0-9]*$' | awk -F'tags/' '{print $2}' | sort -t. -k1,1n -k2,2n -k3,3n)"
         new_tags="$(printf "%s" "$tags"| sed -n '{/\.0$/{g;p}};h' | tail -4),$(printf "%s" "$tags" | tail -1)"
-        new_tags="${echo "$new_tags" | sed -n '1h;1!H;${g;s/\n/,/g;p;}'}"
+        new_tags=$(echo "$new_tags" | sed -n '1h;1!H;${g;s/\n/,/g;p;}')
         python scripts/update.py -v "${new_tags}"
     - name: Push
       uses: github-actions-x/commit@v2.0
