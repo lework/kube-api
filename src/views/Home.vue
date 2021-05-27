@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */ /* eslint-disable no-prototype-builtins
-*/
 <template>
   <div>
     <div class="search">
@@ -7,6 +5,7 @@
         placeholder="输入 Kind or Group"
         v-model.trim="search_text"
         @search="onSearch"
+        allowClear
         enterButton="搜索..."
       />
     </div>
@@ -47,7 +46,11 @@
           </a-table>
         </div>
         <div v-else>
-          <a-table :columns="searchColumns" :data-source="searchData">
+          <a-table
+            :columns="searchColumns"
+            :data-source="searchData"
+            @change="handleSearchChange"
+          >
             <span slot="k8s" slot-scope="k8s, url">
               <a target="_blank" :href="url['url']">{{ k8s }}</a>
             </span>
@@ -101,6 +104,7 @@ export default {
       version_list: [],
       search_text: "",
       searchData: [],
+      sortedInfo: null,
       api_html: "https://kubernetes.io/docs/reference/generated/kubernetes-api/"
     };
   },
@@ -128,6 +132,9 @@ export default {
       this.version = e.key;
       this.getVersionData();
       this.spinning = false;
+    },
+    handleSearchChange(pagination, filters, sorter) {
+      this.sortedInfo = sorter;
     },
     getVersionData() {
       this.data = [];
@@ -193,12 +200,20 @@ export default {
                     .join("."),
                 kind: kind_key,
                 group: group_key,
-                version: this.api_data[this.version][kind_key][group_key]
+                version: this.api_data[k8s_key][kind_key][group_key]
               });
               n += 1;
             }
           }
         }
+      }
+      if (this.searchData.length === 0) {
+        this.$message.warning("未查到信息，请换个关键字！");
+      } else {
+        this.sortedInfo = {
+          order: "ascend",
+          columnKey: "k8s"
+        };
       }
     },
     _getData() {
@@ -210,16 +225,16 @@ export default {
           for (var key in this.api_data) {
             this.version_list.push(key);
           }
+
+          this.version_list.sort(function(a, b) {
+            return a.replace("v", "") > b.replace("v", "") ? -1 : 1;
+          });
           for (var v_key in this.version_list) {
             this.versionFilter.push({
               text: this.version_list[v_key],
               value: this.version_list[v_key]
             });
           }
-
-          this.version_list.sort(function(a, b) {
-            return a.replace("v", "") > b.replace("v", "") ? -1 : 1;
-          });
           this.version = this.version_list[0];
           this.getVersionData();
           this.spinning = false;
@@ -264,6 +279,8 @@ export default {
           title: "K8s Version",
           dataIndex: "k8s",
           filters: this.versionFilter,
+          sortOrder:
+            this.sortedInfo.columnKey === "k8s" && this.sortedInfo.order,
           onFilter: (value, record) => record.k8s === value,
           sorter: (a, b) =>
             a.k8s.replace("v", "") > b.k8s.replace("v", "") ? -1 : 1,
