@@ -174,6 +174,12 @@ export default {
           }
         }
       }
+      this.kindFilter.sort(function(a, b) {
+        return a["text"].localeCompare(b["text"]);
+      });
+      this.groupFilter.sort(function(a, b) {
+        return a["text"].localeCompare(b["text"]);
+      });
     },
     getSearchData(search = "") {
       this.searchData = [];
