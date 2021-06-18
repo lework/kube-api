@@ -2,7 +2,7 @@ name:  update
 
 on:
   schedule:
-    - cron:  '0 10 * * 1-5'
+    - cron:  '0 2 * * 1-5'
   workflow_dispatch:
 jobs:
   update:
@@ -29,6 +29,8 @@ jobs:
         new_tags="$(printf "%s" "$tags"| sed -n '{/\.0$/{g;p}};h' | tail -4),$(printf "%s" "$tags" | tail -1)"
         new_tags=$(echo "$new_tags" | sed -n '1h;1!H;${g;s/\n/,/g;p;}')
         python scripts/update.py -v "${new_tags}"
+    - name: clean
+      run: rm -fv *swagger.json
     - name: Push
       uses: github-actions-x/commit@v2.0
       with:
