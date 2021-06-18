@@ -78,7 +78,7 @@ if __name__ == '__main__':
         if v in api_json_data:
             print("【K8S Version】", v , "跳过")
             continue
-
+        print("【K8S Version】", v , "更新")
         a = get_api_data(v)
         kind_data = generate_kind_data(v, a)
         api_json_data[v] = kind_data
@@ -88,6 +88,6 @@ if __name__ == '__main__':
         with open(data_file, 'w+') as f:
             f.write(json.dumps(api_json_data))
         with open(docs_data_file, 'w+') as f:
-            f.write(json.dumps(docs_data_file))
+            f.write(json.dumps(api_json_data))
             
     print("【执行结束】")
