@@ -24,6 +24,17 @@
                 <a-icon type="down" />
               </a-button>
             </a-dropdown>
+            <a-button type="text" @click="showModal" style="margin-left: 5px"
+              >对比 API</a-button
+            >
+            <router-link
+              tag="button"
+              class="ant-btn ant-btn-text"
+              style="margin-left: 5px"
+              id="diff"
+              to="/diff"
+              >对比 URL 文件</router-link
+            >
           </div>
           <a-table :columns="columns" :data-source="data">
             <span slot="versions" slot-scope="versions, url">
@@ -75,6 +86,40 @@
         </div>
       </a-spin>
     </div>
+
+    <a-modal
+      v-model="visible"
+      title="版本对比"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      :maskClosable="false"
+      width="1480px"
+    >
+      <div style="padding-bottom: 5px">
+        左边版本：
+        <a-select style="width: 120px" @change="handleLeftChange">
+          <a-select-option v-for="version in version_list" :key="version">
+            {{ version }}
+          </a-select-option>
+        </a-select>
+        右边版本：
+        <a-select style="width: 120px" @change="handleRightChange">
+          <a-select-option v-for="version in version_list" :key="version">
+            {{ version }}
+          </a-select-option>
+        </a-select>
+      </div>
+      <div>
+        <code-diff
+          :old-string="leftStr"
+          :new-string="rightStr"
+          outputFormat="side-by-side"
+          renderNothingWhenEmpty
+          isShowNoChange
+          :context="500"
+        />
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -87,8 +132,11 @@ import {
   Menu,
   Icon,
   Tag,
-  Button
+  Button,
+  Modal,
+  Select
 } from "ant-design-vue";
+import { CodeDiff } from "v-code-diff";
 
 export default {
   name: "home",
@@ -105,7 +153,14 @@ export default {
       search_text: "",
       searchData: [],
       sortedInfo: null,
-      api_html: "https://kubernetes.io/docs/reference/generated/kubernetes-api/"
+      api_html:
+        "https://kubernetes.io/docs/reference/generated/kubernetes-api/",
+      visible: false,
+      rightStr: "右边版本内容",
+      leftStr: "左边版本内容",
+      mode: "split",
+      theme: "light",
+      language: "plaintext"
     };
   },
   components: {
@@ -117,7 +172,11 @@ export default {
     AMenuItem: Menu.Item,
     AIcon: Icon,
     ATag: Tag,
-    AButton: Button
+    AButton: Button,
+    AModal: Modal,
+    ASelect: Select,
+    ASelectOption: Select.Option,
+    CodeDiff
   },
   methods: {
     onSearch(value) {
@@ -249,6 +308,50 @@ export default {
           this.$message.error("获取数据失败!");
           console.log(e);
         });
+    },
+    showModal() {
+      this.visible = true;
+      this.rightStr = "请选择左边版本";
+      this.leftStr = "请选择右边版本";
+    },
+    handleOk(e) {
+      console.log(e);
+      this.visible = false;
+    },
+    handleCancel(e) {
+      console.log(e);
+      this.visible = false;
+    },
+    handleLeftChange(value) {
+      let str = [];
+      for (var key in this.api_data[value]) {
+        for (var gkey in this.api_data[value][key]) {
+          str.push(
+            key +
+              " " +
+              gkey +
+              " " +
+              this.api_data[value][key][gkey].sort().join(",")
+          );
+        }
+      }
+      this.leftStr = str.sort().join("\n");
+    },
+    handleRightChange(value) {
+      console.log(value);
+      let str = [];
+      for (var key in this.api_data[value]) {
+        for (var gkey in this.api_data[value][key]) {
+          str.push(
+            key +
+              " " +
+              gkey +
+              " " +
+              this.api_data[value][key][gkey].sort().join(",")
+          );
+        }
+      }
+      this.rightStr = str.sort().join("\n");
     }
   },
   mounted() {

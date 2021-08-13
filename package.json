@@ -13,6 +13,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.0.3",
     "@babel/runtime": "^7.9.2",
+    "@vue/composition-api": "^1.0.5",
     "amfe-flexible": "^2.2.1",
     "ant-design-vue": "^1.4.12",
     "axios": "^0.19.2",
@@ -22,6 +23,7 @@
     "highlight.js": "^9.18.1",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
+    "v-code-diff": "^0.3.0",
     "vue": "^2.6.11",
     "vue-markdown": "^2.2.4",
     "vue-router": "^3.1.5",
