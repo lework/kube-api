@@ -89,7 +89,7 @@
 
     <a-modal
       v-model="visible"
-      title="版本对比"
+      title="版本 API 对比"
       @ok="handleOk"
       @cancel="handleCancel"
       :maskClosable="false"
@@ -311,8 +311,8 @@ export default {
     },
     showModal() {
       this.visible = true;
-      this.rightStr = "请选择左边版本";
-      this.leftStr = "请选择右边版本";
+      this.rightStr = "右边版本内容";
+      this.leftStr = "左边版本内容";
     },
     handleOk(e) {
       console.log(e);
