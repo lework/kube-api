@@ -16,7 +16,7 @@ docs_data_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../do
 
 
 def get_api_data(version="v1.21.1"):
-    data_url = "https://raw.githubusercontent.com/kubernetes/kubernetes/{version}/api/openapi-spec/swagger.json".format(
+    data_url = "https://cdn.jsdelivr.net/gh/kubernetes/kubernetes@{version}/api/openapi-spec/swagger.json".format(
         version=version)
     file_name = "{version}-swagger.json".format(version=version)
 
