@@ -32,7 +32,7 @@ jobs:
     - name: clean
       run: rm -fv *swagger.json
     - name: Push
-      uses: github-actions-x/commit@v2.0
+      uses: github-actions-x/commit@v2.9
       with:
         github-token: ${{ secrets.TOKEN }}
         push-branch: 'master'
