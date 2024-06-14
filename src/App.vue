@@ -22,7 +22,7 @@
         <span
           >已稳定运行 <b>{{ runDay }}</b> 天！</span
         >
-        kube-api ©2021 Created by Lework
+        kube-api ©2024 Created by Lework
         <a href="https://github.com/lework/kube-api" target="_blank">GitHub</a>
       </div>
     </div>

@@ -24,10 +24,10 @@
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "v-code-diff": "^0.3.1",
-    "vue": "^2.6.11",
-    "vue-markdown": "^2.2.4",
-    "vue-router": "^3.1.5",
-    "vuex": "^3.1.2"
+    "vue": "2.6.11",
+    "vue-markdown": "2.2.4",
+    "vue-router": "3.1.5",
+    "vuex": "3.1.2"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.9.0",
@@ -46,8 +46,8 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-vue": "^6.1.2",
     "prettier": "^1.19.1",
-    "sass": "^1.25.0",
-    "sass-loader": "^8.0.2",
-    "vue-template-compiler": "^2.6.11"
+    "sass": "1.25.0",
+    "sass-loader": "8.0.2",
+    "vue-template-compiler": "2.6.11"
   }
 }
