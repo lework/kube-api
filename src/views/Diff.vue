@@ -62,7 +62,7 @@ export default {
         this.leftUrl === null ||
         this.leftUrl === ""
       ) {
-        this.$message.warning("请输入左边 URL ！");
+        this.$message.warning("请输入左边 URL!");
         return;
       }
       if (
@@ -70,7 +70,7 @@ export default {
         this.rightUrl === null ||
         this.rightUrl === ""
       ) {
-        this.$message.warning("请输入右边 URL ！");
+        this.$message.warning("请输入右边 URL!");
         return;
       }
       this.leftStr = "";
