@@ -14,7 +14,11 @@
         <div v-if="searchData.length == 0">
           <div class="tools">
             <a-dropdown>
-              <a-menu slot="overlay" @click="handleMenuClick">
+              <a-menu
+                slot="overlay"
+                @click="handleMenuClick"
+                style="height: 500px;overflow: auto;"
+              >
                 <a-menu-item :key="item" v-for="item in version_list">
                   <a-icon type="search" />{{ item }}
                 </a-menu-item>
@@ -182,6 +186,7 @@ export default {
     onSearch(value) {
       if (typeof value === "undefined" || value === null || value === "") {
         this._getData();
+        this.searchData = [];
       } else {
         this.getSearchData(value);
       }
