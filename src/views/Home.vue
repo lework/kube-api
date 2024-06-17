@@ -93,7 +93,7 @@
 
     <a-modal
       v-model="visible"
-      title="版本 API 对比"
+      title="API 对比"
       @ok="handleOk"
       @cancel="handleCancel"
       :maskClosable="false"
