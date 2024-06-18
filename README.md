@@ -27,3 +27,7 @@ npm run analyz
 ## 参与贡献
 
 欢迎任何形式的贡献.
+
+## Thanks
+
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo." height="120">
